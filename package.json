@@ -1,5 +1,5 @@
 {
-  "name": "js-tendermint-crypto",
+  "name": "tendermint-crypto",
   "version": "1.0.0",
   "description": "Tendermint's go-crypto library in JS",
   "main": "index.js",
