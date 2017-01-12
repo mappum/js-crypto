@@ -1,0 +1,12 @@
+{
+  "name": "js-tendermint-crypto",
+  "version": "1.0.0",
+  "description": "Tendermint's go-crypto library in JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gopherjs build src/wrapper.go -o build/go-crypto.js"
+  },
+  "author": "Matt Bell <mappum@gmail.com>",
+  "license": "MIT"
+}
