@@ -7,6 +7,11 @@ const getKeyAlgorithms = require('./keyAlgorithms.js')
 const PubKey = require('./pubkey.js')
 
 let ALGORITHMS = getKeyAlgorithms('PrivKey')
+for (let name in ALGORITHMS) {
+  let algo = ALGORITHMS[name]
+  if (algo.Gen == null) continue
+  algo.keyLength = algo.Gen().length
+}
 
 function reqd (name) {
   throw new Error(`Argument "${name}" is required`)
@@ -28,7 +33,7 @@ class PrivKey {
 
   pubKey () {
     let pubkey = this.key.PubKey()
-    return PubKey(pubkey)
+    return PubKey(this.algorithm.id, pubkey)
   }
 
   equals (other) {

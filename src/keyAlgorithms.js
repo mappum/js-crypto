@@ -30,8 +30,7 @@ module.exports = function (type) {
     let symbols = getSymbols(type + name)
     let algo = symbols['']
     delete algo['']
-    algo.keyLength = symbols.Gen().length
-    assign(algo, symbols)
+    assign(algo, { id: name }, symbols)
     algorithms[name.toLowerCase()] = algo
   }
   return algorithms

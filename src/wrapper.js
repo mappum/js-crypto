@@ -14,5 +14,5 @@ exports.armor = {
 exports.sha256 = crypto.Sha256
 exports.ripemd160 = crypto.Ripemd160
 
-exports.PrivKey = require('./privKey.js')
-// exports.
+exports.PrivKey = require('./privkey.js')
+exports.PubKey = require('./pubkey.js')
