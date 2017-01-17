@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-go": "gopherjs build src/wrapper.go -o build/go-crypto.js",
     "build": "rm -rf lib && babel --presets es2015 src -d lib",
     "source": "rm -rf lib && ln -s src lib",
     "prepublish": "npm run build",
@@ -14,8 +13,10 @@
   "author": "Matt Bell <mappum@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "object-assign": "^4.1.0",
-    "old": "^0.1.3"
+    "create-hash": "^1.1.2",
+    "ed25519-supercop": "^1.0.2",
+    "old": "^0.1.3",
+    "secp256k1": "^3.2.5"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
