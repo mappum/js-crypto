@@ -4,7 +4,7 @@ const { randomBytes } = require('crypto')
 const secp256k1 = require('secp256k1')
 const { sha256 } = require('../hash.js')
 
-function sign (msg, pub, priv) {
+function sign (msg, priv) {
   return secp256k1.sign(sha256(msg), priv).signature
 }
 

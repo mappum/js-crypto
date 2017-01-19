@@ -2,6 +2,7 @@
 
 const { randomBytes } = require('crypto')
 const ed25519 = require('ed25519-supercop')
+const { sha256 } = require('../hash.js')
 
 function generate () {
   let seed = randomBytes(32)
@@ -9,7 +10,7 @@ function generate () {
 }
 
 function generateFromSecret (secret) {
-  let keypair = ed25519.createKeyPair(secret)
+  let keypair = ed25519.createKeyPair(sha256(secret))
   return {
     privateKey: keypair.secretKey,
     publicKey: keypair.publicKey
