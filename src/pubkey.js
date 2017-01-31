@@ -43,6 +43,10 @@ class PubKey {
 }
 
 function decode (buffer, start = 0, end = buffer.length) {
+  if (buffer[start] === 0) {
+    decode.bytes = 1
+    return null
+  }
   let algo = algorithms.get(buffer[start])
   let length = algo.pubLength + 1
   let key = buffer.slice(start + 1, start + length)
@@ -53,14 +57,19 @@ function decode (buffer, start = 0, end = buffer.length) {
 function encode (pub, buffer, offset = 0) {
   let length = encodingLength(pub)
   buffer = buffer || Buffer.alloc(length)
-  buffer[offset] = pub.algo.id
-  pub.bytes().copy(buffer, offset + 1)
+  if (pub == null) {
+    buffer[offset] = 0
+  } else {
+    buffer[offset] = pub.algo.id
+    pub.bytes().copy(buffer, offset + 1)
+  }
   encode.bytes = length
   return buffer
 }
 
-function encodingLength (priv) {
-  return priv.algo.pubLength + 1
+function encodingLength (pub) {
+  if (pub == null) return 1
+  return pub.algo.pubLength + 1
 }
 
 Object.assign(PubKey, {

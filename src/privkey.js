@@ -35,7 +35,9 @@ class PrivKey {
   }
 
   sign (message) {
-    return this.algo.sign(message, this.key)
+    let sig = this.algo.sign(message, this.pub.key, this.key)
+    sig.type = this.algo.id
+    return sig
   }
 }
 
