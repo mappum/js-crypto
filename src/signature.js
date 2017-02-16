@@ -7,6 +7,7 @@ function decode (buffer, start = 0, end = buffer.length) {
   let length = algo.sigLength + 1
   let signature = buffer.slice(start + 1, start + length)
   decode.bytes = length
+  signature.type = algo.id
   return signature
 }
 
