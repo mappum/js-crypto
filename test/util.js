@@ -7,7 +7,7 @@ const tmp = require('tmp')
 function goEval (code) {
   let tmpFile = tmp.fileSync({ postfix: '.go' })
   writeFileSync(tmpFile.name, code)
-  let output = execSync(`go run ${tmpFile.name}`).toString()
+  let output = execSync(`go run ${tmpFile.name}`)
   tmpFile.removeCallback()
   return output
 }
