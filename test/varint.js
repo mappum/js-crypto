@@ -3,7 +3,7 @@
 const test = require('tape')
 const varint = require('../lib/varint.js')
 const GO = !process.env.NO_GO_TESTS
-const { goEval } = GO ? require('./util.js') : null
+const { goBuild } = GO ? require('./util.js') : null
 
 // skips test if NO_GO_TESTS envvar is set
 function goTest (...args) {
@@ -11,22 +11,25 @@ function goTest (...args) {
   test(...args)
 }
 
-function goEncodeVarint (n) {
-  return goEval(`
-    package main
+const goEncodeVarint = goBuild(`
+  package main
 
-    import (
-      "os"
-      "github.com/tendermint/go-wire"
-    )
+  import (
+    "os"
+    "strconv"
+    "github.com/tendermint/go-wire"
+  )
 
-    func main() {
-      var n int
-      var err error
-      wire.WriteUvarint(${n}, os.Stdout, &n, &err)
+  func main() {
+    var n int
+    var err error
+    i, err := strconv.Atoi(os.Args[1])
+    if err != nil {
+      panic(err)
     }
-  `)
-}
+    wire.WriteUvarint(uint(i), os.Stdout, &n, &err)
+  }
+`)
 
 goTest('varint encoding cross-checked with go-crypto', function (t) {
   let values = [ 0, 1, 255, 256, 1000, 1234567890 ]

@@ -4,14 +4,15 @@ const { execSync } = require('child_process')
 const { writeFileSync } = require('fs')
 const tmp = require('tmp')
 
-function goEval (code) {
-  let tmpFile = tmp.fileSync({ postfix: '.go' })
-  writeFileSync(tmpFile.name, code)
-  let output = execSync(`go run ${tmpFile.name}`)
-  tmpFile.removeCallback()
-  return output
+function goBuild (code, encoding) {
+  let sourceFile = tmp.fileSync({ postfix: '.go' })
+  let binaryFile = tmp.fileSync()
+  writeFileSync(sourceFile.name, code)
+  execSync(`go build -o ${binaryFile.name} ${sourceFile.name}`)
+  sourceFile.removeCallback()
+  return (...args) => execSync(`${binaryFile.name} ${args.join(' ')}`)
 }
 
 module.exports = {
-  goEval
+  goBuild
 }
