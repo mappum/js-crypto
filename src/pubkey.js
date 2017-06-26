@@ -23,6 +23,10 @@ class PubKey {
   }
 
   address () {
+    if (this.algo.address) {
+      return this.algo.address(this.bytes())
+    }
+
     let bytes = AddressBytes.encode({
       type: this.algo.id,
       key: this.bytes()
