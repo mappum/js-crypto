@@ -4,12 +4,13 @@ const { randomBytes } = require('crypto')
 const secp256k1 = require('secp256k1')
 const { ripemd160, sha256 } = require('../hash.js')
 
-function sign (msg, priv) {
-  return secp256k1.sign(sha256(msg), priv).signature
+function sign (msg, pub, priv) {
+  let sig = secp256k1.signatureExport(secp256k1.sign(sha256(msg), priv).signature)
+  return sig
 }
 
 function verify (sig, msg, pub) {
-  return secp256k1.verify(sha256(msg), sig, pub)
+  return secp256k1.verify(sha256(msg), secp256k1.signatureImport(sig), pub)
 }
 
 function generate () {
@@ -34,8 +35,7 @@ module.exports = {
   name: 'secp256k1',
   id: 2,
   privLength: 32,
-  pubLength: 64,
-  sigLength: 64,
+  pubLength: 33,
   sign,
   verify,
   generate,
