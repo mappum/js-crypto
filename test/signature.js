@@ -47,7 +47,6 @@ function goSign(algo, message) {
   }
   `
   )()
-  console.log(out.toString())
   return out.toString()
 }
 
@@ -81,7 +80,7 @@ function goVerify(algo, pubKey, sig, message) {
         panic(err)
       }
 
-      sigBytes, err := hex.DecodeString("${typeByte}${sig.toString('hex')}")
+      sigBytes, err := hex.DecodeString("${sig.toString('hex')}")
       if err != nil {
         panic(err)
       }
@@ -90,14 +89,12 @@ function goVerify(algo, pubKey, sig, message) {
       if err != nil {
         panic(err)
       }
-
       isValid := pub.VerifyBytes(msg, sig)
       fmt.Println(isValid)
     }
   `
   )()
   let output = out.toString()
-  console.log(output)
   return output.indexOf('true') !== -1
 }
 
@@ -133,19 +130,34 @@ test('verify js-crypto ed25519 signature in go-crypto', t => {
   let pub = priv.pubkey()
   let sig = priv.sign(Buffer.from(payload))
 
-  t.ok(goVerify(algo, PubKey.encode(pub), sig, payload))
-  t.notOk(goVerify(algo, PubKey.encode(pub), sig, 'not the correct payload'))
+  t.ok(goVerify(algo, PubKey.encode(pub), signature.encode(sig), payload))
+  t.notOk(
+    goVerify(
+      algo,
+      PubKey.encode(pub),
+      signature.encode(sig),
+      'not the correct payload'
+    )
+  )
 })
 
-test.skip('verify js-crypto secp256k1 signature in go-crypto', t => {
+test('verify js-crypto secp256k1 signature in go-crypto', t => {
   t.plan(2)
   const payload = 'woohoo'
   const algo = 'secp256k1'
   let priv = PrivKey.generate(algo)
   let pub = priv.pubkey()
   let sig = priv.sign(Buffer.from(payload))
-  t.ok(goVerify(algo, PubKey.encode(pub), sig, payload))
-  t.notOk(goVerify(algo, PubKey.encode(pub), sig, 'not the correct payload'))
+
+  t.ok(goVerify(algo, PubKey.encode(pub), signature.encode(sig), payload))
+  t.notOk(
+    goVerify(
+      algo,
+      PubKey.encode(pub),
+      signature.encode(sig),
+      'not the correct payload'
+    )
+  )
 })
 
 test('verify go-crypto ed25519 signature in js-crypto', t => {
@@ -163,7 +175,7 @@ test('verify go-crypto ed25519 signature in js-crypto', t => {
   t.notOk(pub.verify(sig, 'not the correct payload'))
 })
 
-test.skip('verify go-crypto secp256k1 signature in js-crypto', t => {
+test('verify go-crypto secp256k1 signature in js-crypto', t => {
   t.plan(2)
   const payload = 'test123'
   const algo = 'secp256k1'
@@ -171,6 +183,7 @@ test.skip('verify go-crypto secp256k1 signature in js-crypto', t => {
     .split(',')
     .map(h => Buffer.from(h, 'hex'))
 
+  let secp = require('secp256k1')
   let pub = PubKey.decode(pubBytes)
   let sig = signature.decode(sigBytes)
 
