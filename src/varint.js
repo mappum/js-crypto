@@ -2,7 +2,7 @@
 
 const MAX_VALUE = Math.pow(2, 53) - 1
 
-function decode (buffer, start = 0, end = buffer.length) {
+function decode(buffer, start = 0, end = buffer.length) {
   let size = buffer[start]
   let value = 0
   for (let i = start + 1; i <= start + size; i++) {
@@ -13,7 +13,7 @@ function decode (buffer, start = 0, end = buffer.length) {
   return value
 }
 
-function encode (n, buffer = Buffer.alloc(encodingLength(n)), offset = 0) {
+function encode(n, buffer = Buffer.alloc(encodingLength(n)), offset = 0) {
   let size = encodingLength(n) - 1
   buffer[offset] = size
   for (let i = offset + size; i > offset; i--) {
@@ -24,7 +24,7 @@ function encode (n, buffer = Buffer.alloc(encodingLength(n)), offset = 0) {
   return buffer
 }
 
-function encodingLength (n) {
+function encodingLength(n) {
   if (n < 0 || n > MAX_VALUE) {
     throw new Error('varint value is out of bounds')
   }

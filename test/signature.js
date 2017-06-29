@@ -183,7 +183,6 @@ test('verify go-crypto secp256k1 signature in js-crypto', t => {
     .split(',')
     .map(h => Buffer.from(h, 'hex'))
 
-  let secp = require('secp256k1')
   let pub = PubKey.decode(pubBytes)
   let sig = signature.decode(sigBytes)
 

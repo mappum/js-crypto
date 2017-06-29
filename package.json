@@ -4,7 +4,7 @@
   "description": "Tendermint's go-crypto library in JS",
   "main": "index.js",
   "scripts": {
-    "test": "standard src/*.js && nyc tape test/*.js | faucet && nyc report",
+    "test": "nyc tape test/*.js | faucet && nyc report",
     "build": "rm -rf lib && babel --presets es2015 src -d lib",
     "source": "rm -rf lib && ln -s src lib",
     "prepublish": "npm run build",

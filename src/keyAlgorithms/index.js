@@ -1,18 +1,15 @@
 'use strict'
 
-const algorithms = [
-  require('./ed25519'),
-  require('./secp256k1.js')
-]
+const algorithms = [require('./ed25519'), require('./secp256k1.js')]
 
 const byId = {}
 const byName = {}
-algorithms.forEach((algo) => {
+algorithms.forEach(algo => {
   byId[algo.id] = algo
   byName[algo.name] = algo
 })
 
-algorithms.get = function (id) {
+algorithms.get = function(id) {
   let algo
   if (typeof id === 'string') {
     algo = byName[id]

@@ -5,7 +5,7 @@ const algorithms = require('./keyAlgorithms')
 const PubKey = require('./pubkey.js')
 
 class PrivKey {
-  constructor (algoName, bytes) {
+  constructor(algoName, bytes) {
     this.algo = algorithms.get(algoName)
 
     // TODO: remove need to pass in pubkey, derive it instead
@@ -18,30 +18,30 @@ class PrivKey {
     this.pub = new PubKey(algoName, bytes.slice(this.algo.privLength))
   }
 
-  address () {
+  address() {
     return this.pub.address()
   }
 
-  pubkey () {
+  pubkey() {
     return this.pub
   }
 
-  bytes () {
+  bytes() {
     let priv = this.key
     if (this.algo.exportPrivate) {
       priv = this.algo.exportPrivate(this.key)
     }
-    return Buffer.concat([ priv, this.pub.bytes() ])
+    return Buffer.concat([priv, this.pub.bytes()])
   }
 
-  sign (message) {
+  sign(message) {
     let sig = this.algo.sign(message, this.pub.key, this.key)
     sig.type = this.algo.id
     return sig
   }
 }
 
-function decode (buffer, start = 0, end = buffer.length) {
+function decode(buffer, start = 0, end = buffer.length) {
   let algo = algorithms.get(buffer[start])
   let length = algo.privLength + algo.pubLength + 1
   let key = buffer.slice(start + 1, start + length)
@@ -49,7 +49,7 @@ function decode (buffer, start = 0, end = buffer.length) {
   return new PrivKey(algo.name, key)
 }
 
-function encode (priv, buffer, offset = 0) {
+function encode(priv, buffer, offset = 0) {
   let length = encodingLength(priv)
   buffer = buffer || Buffer.alloc(length)
   buffer[offset] = priv.algo.id
@@ -58,24 +58,24 @@ function encode (priv, buffer, offset = 0) {
   return buffer
 }
 
-function encodingLength (priv) {
+function encodingLength(priv) {
   return priv.algo.privLength + priv.algo.pubLength + 1
 }
 
-function fromSeed (algoName, seed) {
+function fromSeed(algoName, seed) {
   let algo = algorithms.get(algoName)
   let keypair = algo.generateFromSecret(seed)
   return fromKeyPair(algoName, keypair)
 }
 
-function generate (algoName) {
+function generate(algoName) {
   let algo = algorithms.get(algoName)
   let keypair = algo.generate()
   return fromKeyPair(algoName, keypair)
 }
 
-function fromKeyPair (algoName, { privateKey, publicKey }) {
-  let bytes = Buffer.concat([ privateKey, publicKey ])
+function fromKeyPair(algoName, { privateKey, publicKey }) {
+  let bytes = Buffer.concat([privateKey, publicKey])
   return new PrivKey(algoName, bytes)
 }
 

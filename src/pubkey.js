@@ -12,7 +12,7 @@ const AddressBytes = struct([
 ])
 
 class PubKey {
-  constructor (algoName, bytes) {
+  constructor(algoName, bytes) {
     this.algo = algorithms.get(algoName)
 
     if (this.algo.importPublic) {
@@ -22,7 +22,7 @@ class PubKey {
     }
   }
 
-  address () {
+  address() {
     if (this.algo.address) {
       return this.algo.address(this.bytes())
     }
@@ -34,19 +34,19 @@ class PubKey {
     return ripemd160(bytes)
   }
 
-  bytes () {
+  bytes() {
     if (this.algo.exportPublic) {
       return this.algo.exportPublic(this.key)
     }
     return this.key
   }
 
-  verify (signature, message) {
+  verify(signature, message) {
     return this.algo.verify(signature, message, this.key)
   }
 }
 
-function decode (buffer, start = 0, end = buffer.length) {
+function decode(buffer, start = 0, end = buffer.length) {
   if (buffer[start] === 0) {
     decode.bytes = 1
     return null
@@ -58,7 +58,7 @@ function decode (buffer, start = 0, end = buffer.length) {
   return new PubKey(algo.name, key)
 }
 
-function encode (pub, buffer, offset = 0) {
+function encode(pub, buffer, offset = 0) {
   let length = encodingLength(pub)
   buffer = buffer || Buffer.alloc(length)
   if (pub == null) {
@@ -71,7 +71,7 @@ function encode (pub, buffer, offset = 0) {
   return buffer
 }
 
-function encodingLength (pub) {
+function encodingLength(pub) {
   if (pub == null) return 1
   return pub.algo.pubLength + 1
 }
