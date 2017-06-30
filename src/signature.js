@@ -9,14 +9,17 @@ function isVariableLength(sig) {
 
 function decode(buffer, start = 0, end = buffer.length) {
   let algo = algorithms.get(buffer[start])
-  let length = end - start
   let signature
   if (algo.sigLength) {
+    let length = algo.sigLength
     signature = buffer.slice(start + 1, start + length)
+    decode.bytes = 1 + length
   } else {
-    signature = buffer.slice(start + 1 + varint.encode(length - 1).length, end)
+    let length = varint.decode(buffer, start + 1, end)
+    let sigStart = start + 1 + varint.decode.bytes
+    signature = buffer.slice(sigStart, sigStart + length)
+    decode.bytes = 1 + varint.decode.bytes + length
   }
-  decode.bytes = length
   signature.type = algo.id
   return signature
 }
@@ -41,7 +44,7 @@ function encode(sig, buffer, offset = 0) {
 function encodingLength(sig) {
   if (isVariableLength(sig)) {
     // sig length, type byte, varint length prefix bytes
-    return sig.length + 1 + varint.encode(sig.length).length
+    return sig.length + 1 + varint.encodingLength(sig.length)
   } else {
     // signature length plus the type byte
     return sig.length + 1
