@@ -1,54 +1,33 @@
 'use strict'
 
 const algorithms = require('./keyAlgorithms')
-const varint = require('./varint.js')
-
-function isVariableLength(sig) {
-  return Number(sig.type) === 2
-}
+const NIL = Buffer.alloc(0)
+NIL.type = 0
 
 function decode(buffer, start = 0, end = buffer.length) {
-  let algo = algorithms.get(buffer[start])
-  let signature
-  if (algo.sigLength) {
-    let length = algo.sigLength
-    signature = buffer.slice(start + 1, start + length)
-    decode.bytes = 1 + length
-  } else {
-    let length = varint.decode(buffer, start + 1, end)
-    let sigStart = start + 1 + varint.decode.bytes
-    signature = buffer.slice(sigStart, sigStart + length)
-    decode.bytes = 1 + varint.decode.bytes + length
-  }
+  let type = buffer[start]
+  if (type === 0) return null
+  let algo = algorithms.get(type)
+  let signature = algo.Signature.decode(buffer, start + 1, end)
   signature.type = algo.id
+  decode.bytes = algo.Signature.decode.bytes + 1
   return signature
 }
 
 function encode(sig, buffer, offset = 0) {
-  let length = encodingLength(sig)
-  buffer = buffer || Buffer.alloc(length)
+  if (sig == null) sig = NIL
+  let algo = algorithms.get(sig.type)
+  buffer = buffer || Buffer.allocUnsafe(encodingLength(sig))
   buffer[offset] = sig.type
-
-  if (isVariableLength(sig)) {
-    // add varint length prefix
-    let lenPrefix = varint.encode(sig.length)
-    lenPrefix.copy(buffer, offset + 1)
-    sig.copy(buffer, offset + lenPrefix.length + 1)
-  } else {
-    sig.copy(buffer, offset + 1)
-  }
-  encode.bytes = length
-  return buffer
+  let bytes = algo.Signature.encode(sig, buffer, offset + 1)
+  encode.bytes = algo.Signature.encode.bytes + 1
+  return bytes
 }
 
 function encodingLength(sig) {
-  if (isVariableLength(sig)) {
-    // sig length, type byte, varint length prefix bytes
-    return sig.length + 1 + varint.encodingLength(sig.length)
-  } else {
-    // signature length plus the type byte
-    return sig.length + 1
-  }
+  if (sig == null || sig === NIL) return 1
+  let algo = algorithms.get(sig.type)
+  return algo.Signature.encodingLength(sig) + 1
 }
 
 module.exports = {
